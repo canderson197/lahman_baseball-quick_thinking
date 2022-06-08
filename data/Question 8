@@ -6,14 +6,36 @@
        -Repeat for the lowest 5 average attendance.
 */
 
+/*
 SELECT year, league, team, park, span_first, span_last, games, openings, attendance
 	FROM public.homegames;
-    
+*/    
+
+--LOWEST ATTENDANCE--
 SELECT 
        park
       ,team
-      ,attendance/games AS avg_attendance_park
+      ,attendance/games AS avg_attend_park
+      ,RANK() OVER (ORDER by attendance/games) AS attendance_rank
 --      ,attendance
 --      ,games
 FROM homegames
-WHERE year = 2016 --AND games >=10
+WHERE year = 2016 AND games >=10
+LIMIT 5
+
+
+--HIGHEST ATTENDANCE--
+SELECT 
+       park
+      ,team
+      ,attendance/games AS avg_attend_park
+      ,RANK() OVER (ORDER by attendance/games DESC) AS attendance_rank
+--      ,attendance
+--      ,games
+FROM homegames
+WHERE year = 2016 AND games >=10
+LIMIT 5
+
+
+
+
