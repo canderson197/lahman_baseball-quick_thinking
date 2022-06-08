@@ -1,0 +1,77 @@
+/*  #10 Find all players who hit their career highest number of home runs in 2016. 
+        Consider only players who have played in the league for at least 10 years, AND who hit at least one home run in 2016.   
+        Report the players' first and last names and the number of home runs they hit in 2016.
+
+    Need player name (first, Last)--done!
+    Need homeruns >=1 AND year = 2016--done!
+    Need player years in league >=10--done!
+
+    'batting' table has PlayerID, YearID & HR (homeruns)
+    need to join with 'people' table ON playerID
+*/
+
+/*
+--create a CTE that has playerID, yearID and HomeRunTotals  ******
+--Kelly said she used a rank combo with a partition inside a subquery to solve this. 
+--She also put this in the subquery in 10 to isolate players who had their highest hr total in 2016.
+--EXTRACT(year FROM finalgame::date) - EXTRACT(year FROM debut::date) + 1 AS career_seasons
+*/
+
+--This is all players in 2016 who hit more than 1 HR (homerun) and have been in the league 10 years or more. 
+SELECT DISTINCT 
+        PlayerID
+       ,nameFIRST
+       ,nameLAST 
+       ,yearID
+       ,sum(HR) AS homeruns
+       ,debut
+       ,finalgame
+       ,EXTRACT(year FROM finalgame::date) - EXTRACT(year FROM debut::date) AS career_seasons
+FROM people AS p
+LEFT JOIN batting AS b  USING(playerID)
+WHERE yearID = 2016
+  AND HR    >= 1  --AND debut < '2006-01-01'  
+GROUP by PlayerID, yearID, debut
+HAVING (EXTRACT(year FROM finalgame::date) - EXTRACT(year FROM debut::date)) >= 10
+ORDER by PlayerID;
+
+--This is all players for all years 1993 and after and how many homeruns they hit. 
+--Need to write query that will tell me if each player HR's in 2016 are the greatest amount over their total # of HR's each year player career. 
+--Final result will be some sort of combo of both tables. Looks to be a subquery with a partition. 
+SELECT DISTINCT
+       yearid
+      ,playerid
+      ,sum(hr)    AS total_homeruns
+FROM people       AS peep
+LEFT JOIN batting AS bats  USING(playerID)
+WHERE yearid >= 1993
+  AND (EXTRACT(year FROM finalgame::date) - EXTRACT(year FROM debut::date)) >= 10
+GROUP BY playerid
+        ,yearid
+HAVING sum(hr) >= 1
+ORDER BY total_homeruns DESC
+        ,playerid
+        ,yearid
+
+
+
+/*  This is my comparison of join to make sure results yieled the same thing
+
+SELECT PlayerID, nameFIRST, nameLAST, yearID, HR
+FROM batting AS b
+LEFT JOIN people AS p
+USING(playerID)
+WHERE yearID = 2016
+
+SELECT PlayerID, nameFIRST, nameLAST, yearID, HR
+FROM people AS p
+LEFT JOIN batting AS b
+USING(playerID)
+WHERE yearID = 2016
+*/
+
+/* How I know last year of data is 2016
+SELECT max(yearid)
+FROM batting
+*/
+
