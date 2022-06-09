@@ -11,7 +11,7 @@
         Join schools and collegeplaying from people using matching id
         
         **Then I need to find salary based on that result. 
-            salaries            salary
+            salaries            salary    
 */
 
 WITH VandyAlum AS
