@@ -1,0 +1,74 @@
+/*
+    #3  Find all players in the database who played at Vanderbilt University. 
+        Create a list showing each player’s first and last names as well as the total salary they earned in the major leagues. 
+        Sort this list in descending order by the total salary earned. 
+        Which Vanderbilt player earned the most money in the majors?
+        
+        **First I need to get a list of players that went to Vandy. 
+             people             namefirst   namelast    playerid
+             schools            schoolid    schoolname
+             collegeplaying     schoolid    playerid   
+        Join schools and collegeplaying from people using matching id
+        
+        **Then I need to find salary based on that result. 
+            salaries            salary
+*/
+
+WITH VandyAlum AS
+                 ( 
+                  SELECT DISTINCT playerid
+                  FROM people
+                  LEFT JOIN collegeplaying USING(playerID)
+                  LEFT JOIN schools USING(schoolID)
+                  WHERE schoolname = 'Vanderbilt University' 
+                 )
+SELECT DISTINCT 
+               nameFirst
+              ,nameLast
+              ,sum(salary::text::money) AS total_earned
+FROM VandyAlum
+LEFT JOIN people USING (playerid)
+LEFT JOIN salaries USING(playerid)
+GROUP by  
+         nameFirst
+        ,nameLast
+ORDER by total_earned DESC NULLS LAST;
+
+
+
+
+
+--   COLIN'S ANSWERS--
+--   Vandy CTE and GROUP BY
+WITH Vandy_alums as (SELECT DISTINCT people.playerid
+                    FROM people 
+                    LEFT JOIN collegeplaying ON people.playerid = collegeplaying.playerid
+                    LEFT JOIN schools ON collegeplaying.schoolid = schools.schoolid
+                    WHERE schoolname = 'Vanderbilt University')
+                    
+SELECT playerid, 
+       namefirst, 
+       namelast, 
+       SUM(salary) as major_league_earnings
+FROM Vandy_alums 
+                 LEFT JOIN people USING(playerid)
+                 LEFT JOIN salaries USING(playerid)  
+GROUP BY playerid, 
+       namefirst, 
+       namelast
+ORDER BY major_league_earnings DESC NULLS LAST
+
+--    Window function method
+WITH Vandy_alums as (SELECT DISTINCT people.playerid
+                    FROM people LEFT JOIN collegeplaying ON people.playerid = collegeplaying.playerid
+                    LEFT JOIN schools ON collegeplaying.schoolid = schools.schoolid
+                    WHERE schoolname = 'Vanderbilt University')
+SELECT DISTINCT playerid, 
+       namefirst, 
+       namelast, 
+       SUM(salary) OVER(PARTITION BY playerid) as major_league_earnings
+FROM Vandy_alums LEFT JOIN people USING(playerid)
+                 LEFT JOIN salaries USING(playerid)
+ORDER by major_league_earnings DESC NULLS LAST
+
+                     

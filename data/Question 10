@@ -10,6 +10,36 @@
     need to join with 'people' table ON playerID
 */
 
+--ANSWER__
+WITH ccc AS 
+      (
+       SELECT 
+              yearid
+             ,playerid
+             ,nameFIRST
+             ,nameLAST
+             ,sum(hr)    AS total_homeruns            
+       FROM people       AS peep
+       LEFT JOIN batting AS bats  USING(playerID)
+       WHERE (EXTRACT(year FROM finalgame::date) - EXTRACT(year FROM debut::date)) >= 10
+       GROUP BY playerid
+               ,yearid
+       HAVING sum(hr) >= 1
+       ORDER BY yearID DESC
+               ,playerid
+       ),
+    
+bbb AS
+    ( 
+     SELECT *
+           ,MAX(total_homeruns) OVER(PARTITION BY playerID) AS max_hr
+FROM ccc
+    )
+    
+SELECT *
+FROM bbb
+WHERE yearid = 2016 AND total_homeruns = max_hr;
+
 /*
 STEPS I TOOK TO FIGURE OUT FINAL SOLUTION...
 
@@ -57,34 +87,7 @@ ________________________________________________________________________________
 */
 
 
-WITH ccc AS 
-      (
-       SELECT 
-               yearid
-              ,playerid
-              ,nameFIRST
-              ,nameLAST
-              ,sum(hr)   AS total_homeruns            
-        FROM people       AS peep
-        LEFT JOIN batting AS bats  USING(playerID)
-        WHERE (EXTRACT(year FROM finalgame::date) - EXTRACT(year FROM debut::date)) >= 10
-        GROUP BY playerid
-                ,yearid
-        HAVING sum(hr) >= 1
-        ORDER BY yearID DESC
-                ,playerid
-       ),
-    
-bbb AS
-    ( 
-SELECT  *
-        ,MAX(total_homeruns) OVER(PARTITION BY playerID) AS max_hr
-FROM ccc
-    )
-    
-SELECT *
-FROM bbb
-WHERE yearid = 2016 AND total_homeruns = max_hr;
+
 
 
       

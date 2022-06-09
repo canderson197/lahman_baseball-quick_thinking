@@ -1,0 +1,22 @@
+/*
+    #2  Find the name and height of the shortest player in the database. 
+        How many games did he play in? 
+        What is the name of the team for which he played?
+*/
+
+SELECT 
+       nameFIRST
+      ,nameLAST
+      ,min(height)
+      ,G_all
+      ,teamID
+FROM appearances
+LEFT JOIN people USING(playerID)
+GROUP by nameFIRST
+        ,nameLAST
+        ,G_all
+        ,teamID
+        ,height
+ORDER by height
+
+

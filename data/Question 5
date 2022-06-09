@@ -7,7 +7,7 @@
 (Lauren's note - last decade 2010-2019 years of data only goes up to 2016)
 */
 
---FINAL QUERY--
+--ANSWER--
 WITH yrly_avgs AS 
               (
                SELECT yearid
@@ -37,10 +37,8 @@ GROUP BY decade
 ORDER BY decade;
 
 
-
-
-
-/*FAILED ATTEMPTS TO SOLVE
+/*
+FAILED ATTEMPTS TO SOLVE
 SELECT yearid
       ,playerID
       ,g AS games
@@ -98,7 +96,6 @@ FROM teams
 WHERE yearid >= 1920
 GROUP BY yearid
 ORDER BY yearid;
-
 */
 
 
