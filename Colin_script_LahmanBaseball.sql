@@ -1,5 +1,6 @@
-/*These SQL queries are work that I completed independently. This was part of a team project, so I may have consulted with colleagues
-on these queries, but they represent my individual abilities accurately. */
+/* The complete project for Lahman baseball was a collaboration with Lauren Della Russo and Mylah Kate Gainey. However, 
+in my script I have only included the code for certain questions, 
+each of which represents my individual work and abilities. */
 
 /*1. What range of years for baseball games played does the provided database cover?
 from 1871 to 2016 */
